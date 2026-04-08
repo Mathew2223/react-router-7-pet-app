@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route, Link } from 'react-router';
+import { Routes, Route, Outlet, Link, NavLink, type NavLinkRenderProps } from 'react-router';
 
 const App = () => {
     return (
@@ -9,8 +9,10 @@ const App = () => {
             <Navigaion />
 
             <Routes>
-                <Route path='home' element={<Home />} />
-                <Route path='users' element={<Users />} />
+                <Route element={<Layout />}>
+                    <Route path='home' element={<Home />} />
+                    <Route path='users' element={<Users />} />
+                </Route>
             </Routes>
         </>
     )
@@ -29,18 +31,48 @@ const Navigaion = () => {
 
 const Home = () => {
     return (
-        <main style={{ padding: "1rem 0" }}>
+        <>
             <h2>Home</h2>
-        </main>
+        </>
     );
 };
 
 const Users = () => {
     return (
-        <main style={{ padding: "1rem 0" }}>
+        <>
             <h2>Users</h2>
-        </main>
+        </>
     );
 };
+
+type LayoutProps = {
+    children: React.ReactNode;
+}
+
+const Layout = () => {
+    const style = ({ isActive }: NavLinkRenderProps) => ({
+        fontWeight: isActive ? "bold" : "normal",
+    });
+
+    return (
+        <>
+            <h1>React Router</h1>
+
+            <nav
+                style={{
+                    borderBottom: "solid 1px",
+                    paddingBottom: "1rem",
+                }}
+            >
+                <NavLink to="/home" style={style}>Home</NavLink>
+                <NavLink to="/users" style={style}>Users</NavLink>
+            </nav>
+
+            <main style={{ padding: '1rem 0' }}>
+                <Outlet />
+            </main>
+        </>
+    )
+}
 
 export default App
