@@ -1,7 +1,12 @@
 import './App.css';
-import { Routes, Route, Outlet, Link, NavLink, type NavLinkRenderProps } from 'react-router';
+import { Routes, Route, Outlet, Link, NavLink, type NavLinkRenderProps, useParams } from 'react-router';
 
 const App = () => {
+    const users = [
+        { id: '1', fullName: 'Robin Wieruch' },
+        { id: '2', fullName: 'Sarah Finnley' },
+    ]
+
     return (
         <>
             <h1>React Router</h1>
@@ -10,8 +15,11 @@ const App = () => {
 
             <Routes>
                 <Route element={<Layout />}>
-                    <Route path='home' element={<Home />} />
-                    <Route path='users' element={<Users />} />
+                    <Route index path='home' element={<Home />} />
+                    <Route path='users' element={<Users users={users} />}>
+                        <Route path=':userId' element={<User />} />
+                    </Route>
+                    <Route path='*' element={<NoMatch />} />
                 </Route>
             </Routes>
         </>
@@ -37,13 +45,47 @@ const Home = () => {
     );
 };
 
-const Users = () => {
+type User = {
+    id: string;
+    fullName: string;
+};
+
+type UsersProps = {
+    users: User[];
+};
+
+const User = () => {
+    const { userId } = useParams();
+
+    return (
+        <>
+            <h2>User: {userId}</h2>
+            <Link to="/users">Back to Users</Link>
+        </>
+    )
+}
+
+const Users = ({ users }: UsersProps) => {
     return (
         <>
             <h2>Users</h2>
+
+            <ul>
+                {users.map((user) => (
+                    <li key={user.id}>
+                        <Link to={`/users/${user.fullName}`}>{user.fullName}</Link>
+                    </li>
+                ))}
+            </ul>
+
+            <Outlet />
         </>
     );
 };
+
+const NoMatch = () => {
+    return (<p>There's no nothing here: 404!</p>);
+}
 
 type LayoutProps = {
     children: React.ReactNode;
